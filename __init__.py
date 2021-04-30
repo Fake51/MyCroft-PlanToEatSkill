@@ -74,7 +74,7 @@ class PlanToEat(MycroftSkill):
             data = urlencode(data)
         )
 
-	LOGGER.info(urlencode(data))
+        LOGGER.info(urlencode(data))
 
         LOGGER.info(login_response.status_code)
 
