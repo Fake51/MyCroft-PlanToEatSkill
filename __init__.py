@@ -247,6 +247,7 @@ class PlanToEat(MycroftSkill):
         )
 
         LOGGER.info(add_item_response.status_code)
+        LOGGER.info(add_item_response.text)
 
         return True
     
