@@ -51,7 +51,7 @@ class PlanToEat(MycroftSkill):
             }
         )
 
-        LOGGER(response.status_code)
+        LOGGER.info(response.status_code)
 
         soup = BeautifulSoup(response.text, "html.parser")
 
@@ -74,7 +74,7 @@ class PlanToEat(MycroftSkill):
             data = urlencode(data)
         )
 
-        LOGGER(login_response.status_code)
+        LOGGER.info(login_response.status_code)
 
         shopping_lists = self.session.get(
             "https://www.plantoeat.com/shopping_lists",
@@ -83,7 +83,7 @@ class PlanToEat(MycroftSkill):
             }
         )
 
-        LOGGER(shopping_lists.status_code)
+        LOGGER.info(shopping_lists.status_code)
 
         soup = BeautifulSoup(shopping_lists.text, "html.parser")
         list_id_input = soup.find_all("input", id="shopping_list_id")
@@ -234,7 +234,7 @@ class PlanToEat(MycroftSkill):
             data = urlencode(data)
         )
 
-        LOGGER(add_item_response.status_code)
+        LOGGER.info(add_item_response.status_code)
 
         return True
     
