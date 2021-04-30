@@ -17,7 +17,7 @@ class PlanToEat(MycroftSkill):
         self.shopping_list_id = None
 
     def initialize(self):
-        self.settings_change_callback = _setup
+        self.settings_change_callback = self.on_settings_changed
         self._setup()
 
     def on_settings_changed(self):
