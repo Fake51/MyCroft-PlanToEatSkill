@@ -100,7 +100,7 @@ class PlanToEat(MycroftSkill):
             return
 
         self.shopping_list_id = list_id_input[0]['value']
-
+        LOGGER.info(self.shopping_list_id)
         self.logged_in = True
 
     @intent_file_handler('AddToList.intent')
@@ -245,9 +245,8 @@ class PlanToEat(MycroftSkill):
             },
             data = urlencode(data)
         )
-
+        LOGGER.info(urlencode(data))
         LOGGER.info(add_item_response.status_code)
-        LOGGER.info(add_item_response.text)
 
         return True
     
