@@ -17,13 +17,11 @@ class PlanToEat(MycroftSkill):
         self.shopping_list_id = None
 
     def initialize(self):
-        self.settings.set_changed_callback(self.on_websettings_changed)
+        self.settings_change_callback = _setup
         self._setup()
 
-    def on_websettings_changed(self):
-        # Force a setting refresh after the websettings changed
-        # Otherwise new settings will not be regarded
-        self._setup()
+    def on_settings_changed(self):
+	self._setup()
 
     def _setup(self):
         if not self.settings:
