@@ -1,7 +1,7 @@
 from mycroft import MycroftSkill, intent_file_handler
 from bs4 import BeautifulSoup
 from requests import Session
-from urllib.parse import urlencode
+from urllib.parse import urlencode, quote
 from mycroft.util.log import getLogger 
 
 userAgent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36'
@@ -115,7 +115,7 @@ class PlanToEat(MycroftSkill):
             self.speak_dialog('AddToList_failure', {'item': item_name})
 
     def _add_item_to_list(self, item_name):
-        requestData = submitString.format(self.shopping_list_id, urlencode(item_name))
+        requestData = submitString.format(self.shopping_list_id, quote(item_name))
 
         add_item_response = self.session.post(
             "https://www.plantoeat.com/shopping_lists/update",
