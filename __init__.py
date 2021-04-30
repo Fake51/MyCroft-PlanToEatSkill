@@ -21,7 +21,7 @@ class PlanToEat(MycroftSkill):
         self._setup()
 
     def on_settings_changed(self):
-	self._setup()
+        self._setup()
 
     def _setup(self):
         if not self.settings:
