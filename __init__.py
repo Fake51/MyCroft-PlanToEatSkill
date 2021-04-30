@@ -2,17 +2,41 @@ from mycroft import MycroftSkill, intent_file_handler
 from bs4 import BeautifulSoup
 from requests import Session
 from urllib.parse import urlencode
+from mycroft.util.log import getLogger 
 
 userAgent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36'
+
+LOGGER = getLogger(__name__)
 
 class PlanToEat(MycroftSkill):
     def __init__(self):
         MycroftSkill.__init__(self)
+        super().__init__(name="PlanToEatSkill")
         self.session = Session()
         self.logged_in = False
         self.shopping_list_id = None
 
     def initialize(self):
+        if not self.settings:
+            LOGGER.error("settings is not set")
+            return
+
+        if not self.settings.get('username'):
+            LOGGER.error("username setting is not set")
+            return
+
+        if not len(self.settings.get('username')):
+            LOGGER.error("username setting is empty")
+            return
+
+        if not self.settings.get('password'):
+            LOGGER.error("username setting is not set")
+            return
+
+        if not len(self.settings.get('password')):
+            LOGGER.error("username setting is empty")
+            return
+
         response = self.session.get(
             "https://www.plantoeat.com/login",
             headers = {
