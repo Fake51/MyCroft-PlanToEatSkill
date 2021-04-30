@@ -17,6 +17,15 @@ class PlanToEat(MycroftSkill):
         self.shopping_list_id = None
 
     def initialize(self):
+        self.settings.set_changed_callback(self.on_websettings_changed)
+        self._setup()
+
+    def on_websettings_changed(self):
+        # Force a setting refresh after the websettings changed
+        # Otherwise new settings will not be regarded
+        self._setup()
+
+    def _setup(self):
         if not self.settings:
             LOGGER.error("settings is not set")
             return
@@ -44,6 +53,8 @@ class PlanToEat(MycroftSkill):
             }
         )
 
+        LOGGER(response.status_code)
+
         soup = BeautifulSoup(response.text, "html.parser")
 
         csrf = soup.find_all("meta", attrs = {"name": "csrf-token"})
@@ -65,6 +76,8 @@ class PlanToEat(MycroftSkill):
             data = urlencode(data)
         )
 
+        LOGGER(login_response.status_code)
+
         shopping_lists = self.session.get(
             "https://www.plantoeat.com/shopping_lists",
             headers = {
@@ -72,13 +85,13 @@ class PlanToEat(MycroftSkill):
             }
         )
 
+        LOGGER(shopping_lists.status_code)
+
         soup = BeautifulSoup(shopping_lists.text, "html.parser")
         list_id_input = soup.find_all("input", id="shopping_list_id")
         self.shopping_list_id = list_id_input[0]['value']
 
         self.logged_in = True
-
-        return
 
     @intent_file_handler('AddToList.intent')
     def handle_add_to_list(self, message):
@@ -222,6 +235,8 @@ class PlanToEat(MycroftSkill):
             },
             data = urlencode(data)
         )
+
+        LOGGER(add_item_response.status_code)
 
         return True
     
