@@ -1,0 +1,13 @@
+
+skillMetadata:
+  sections:
+    - name: Options
+      fields:
+        - name: username
+          type: text
+          label: Plan-to-Eat User Name
+          value: ""
+        - name: password
+          type: text
+          label: Plan-to-Eat Password
+          value: ""
