@@ -74,7 +74,12 @@ class PlanToEat(MycroftSkill):
             data = urlencode(data)
         )
 
-        LOGGER.info(urlencode(data))
+        soup = BeautifulSoup(login_response.text, "html.parser")
+        logout = soup.find_all('a', attrs = {"href": "/logout"})
+
+        if not logout:
+            LOGGER.error("Failed to login")
+            return
 
         LOGGER.info(login_response.status_code)
 
@@ -89,6 +94,11 @@ class PlanToEat(MycroftSkill):
 
         soup = BeautifulSoup(shopping_lists.text, "html.parser")
         list_id_input = soup.find_all("input", id="shopping_list_id")
+
+        if not list_id_input:
+            LOGGER.error("Failed to find shopping list id")
+            return
+
         self.shopping_list_id = list_id_input[0]['value']
 
         self.logged_in = True
