@@ -117,6 +117,10 @@ class PlanToEat(MycroftSkill):
 
     @intent_file_handler('AddToList.intent')
     def handle_add_to_list(self, message):
+        if not self.logged_in:
+            self.speak_dialog('NotLoggedIn')
+            return
+
         item_name = message.data.get('item')
 
         if self._add_item_to_list(item_name):
@@ -125,8 +129,7 @@ class PlanToEat(MycroftSkill):
             self.speak_dialog('AddToList_failure', {'item': item_name})
 
     def _add_item_to_list(self, item_name):
-        #category_suggestion = self._get_category_suggestion(item_name)
-        category_suggestion = ''
+        category_suggestion = self._get_category_suggestion(item_name)
 
         requestData = submitString.format(self.shopping_list_id, quote(item_name), category_suggestion)
 
