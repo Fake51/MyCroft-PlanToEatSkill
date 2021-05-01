@@ -2,6 +2,7 @@ from mycroft import MycroftSkill, intent_file_handler
 from bs4 import BeautifulSoup
 from requests import Session
 from urllib.parse import urlencode, quote
+import json
 
 userAgent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36'
 
@@ -152,7 +153,8 @@ class PlanToEat(MycroftSkill):
         if response.status_code != 200:
             return ""
 
-        json = response.json()
+        self.log.info(response.text)
+        json = json.loads(response.text)
 
         if json and len(json) > 0:
             return json[0]
