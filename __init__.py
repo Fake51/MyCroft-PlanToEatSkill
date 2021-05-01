@@ -125,8 +125,7 @@ class PlanToEat(MycroftSkill):
             self.speak_dialog('AddToList_failure', {'item': item_name})
 
     def _add_item_to_list(self, item_name):
-        #category_suggestion = self._get_category_suggestion(item_name)
-        category_suggestion = ''
+        category_suggestion = self._get_category_suggestion(item_name)
 
         requestData = submitString.format(self.shopping_list_id, quote(item_name), category_suggestion)
 
@@ -154,11 +153,10 @@ class PlanToEat(MycroftSkill):
         if response.status_code != 200:
             return ""
 
-        self.log.info(response.text)
         json = json.loads(response.text)
 
-        if json and len(json) > 0:
-            return json[0]
+        if json and len(json) == 3 and json[2]:
+            return json[2]
         
         return ''
     
