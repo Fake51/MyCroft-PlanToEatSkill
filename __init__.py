@@ -144,7 +144,7 @@ class PlanToEat(MycroftSkill):
 
     def _get_category_suggestion(self, item_name):
         response = self.session.post(
-            baseUrl.format("shopping_lists/update"),
+            baseUrl.format("recommend_category"),
             headers = {'User-Agent': userAgent},
             data = urlencode({'title': item_name})
         )
