@@ -152,7 +152,7 @@ class PlanToEat(MycroftSkill):
 
         if response.status_code != 200:
             return ""
-
+        self.log.info(response.text)
         result = json.loads(response.text)
 
         if result and len(result) == 3 and result[2]:
