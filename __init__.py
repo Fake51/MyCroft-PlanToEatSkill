@@ -149,7 +149,7 @@ class PlanToEat(MycroftSkill):
             headers = {'User-Agent': userAgent, 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},
             data = "title={0}".format(quote(item_name))
         )
-
+        self.log.info("url: {0}, body: {1}".format(response.request.url, response.request.body))
         if response.status_code != 200:
             return ""
 
