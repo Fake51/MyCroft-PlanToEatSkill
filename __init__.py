@@ -144,16 +144,15 @@ class PlanToEat(MycroftSkill):
         return True
 
     def _get_category_suggestion(self, item_name):
-        self.log.info(urlencode({'title': item_name}))
         response = self.session.post(
             baseUrl.format("recommend_category"),
-            headers = {'User-Agent': userAgent},
-            data = urlencode({'title': item_name})
+            headers = {'User-Agent': userAgent, 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},
+            data = "title={0}".format(quote(item_name))
         )
 
         if response.status_code != 200:
             return ""
-        self.log.info(response.text)
+
         result = json.loads(response.text)
 
         if result and len(result) == 3 and result[2]:
