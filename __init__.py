@@ -2,15 +2,12 @@ from mycroft import MycroftSkill, intent_file_handler
 from bs4 import BeautifulSoup
 from requests import Session
 from urllib.parse import urlencode, quote
-from mycroft.util.log import getLogger 
 
 userAgent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36'
 
 submitString = 'shopping_list_id={0}&autoStore=1&ingredients%5B%5D%5Bamount%5D=&ingredients%5B%5D%5Bunit%5D=&ingredients%5B%5D%5Btitle%5D={1}&ingredients%5B%5D%5Bnote%5D=&ingredients%5B%5D%5Bcategory%5D={2}&ingredients%5B%5D%5Bstore%5D=0&ingredients%5B%5D%5Bamount%5D=&ingredients%5B%5D%5Bunit%5D=&ingredients%5B%5D%5Btitle%5D=&ingredients%5B%5D%5Bnote%5D=&ingredients%5B%5D%5Bcategory%5D=&ingredients%5B%5D%5Bstore%5D=0&ingredients%5B%5D%5Bamount%5D=&ingredients%5B%5D%5Bunit%5D=&ingredients%5B%5D%5Btitle%5D=&ingredients%5B%5D%5Bnote%5D=&ingredients%5B%5D%5Bcategory%5D=&ingredients%5B%5D%5Bstore%5D=0&ingredients%5B%5D%5Bamount%5D=&ingredients%5B%5D%5Bunit%5D=&ingredients%5B%5D%5Btitle%5D=&ingredients%5B%5D%5Bnote%5D=&ingredients%5B%5D%5Bcategory%5D=&ingredients%5B%5D%5Bstore%5D=0&ingredients%5B%5D%5Bamount%5D=&ingredients%5B%5D%5Bunit%5D=&ingredients%5B%5D%5Btitle%5D=&ingredients%5B%5D%5Bnote%5D=&ingredients%5B%5D%5Bcategory%5D=&ingredients%5B%5D%5Bstore%5D=0&ingredients%5B%5D%5Bamount%5D=&ingredients%5B%5D%5Bunit%5D=&ingredients%5B%5D%5Btitle%5D=&ingredients%5B%5D%5Bnote%5D=&ingredients%5B%5D%5Bcategory%5D=&ingredients%5B%5D%5Bstore%5D=0&ingredients%5B%5D%5Bamount%5D=&ingredients%5B%5D%5Bunit%5D=&ingredients%5B%5D%5Btitle%5D=&ingredients%5B%5D%5Bnote%5D=&ingredients%5B%5D%5Bcategory%5D=&ingredients%5B%5D%5Bstore%5D=0&ingredients%5B%5D%5Bamount%5D=&ingredients%5B%5D%5Bunit%5D=&ingredients%5B%5D%5Btitle%5D=&ingredients%5B%5D%5Bnote%5D=&ingredients%5B%5D%5Bcategory%5D=&ingredients%5B%5D%5Bstore%5D=0&ingredients%5B%5D%5Bamount%5D=&ingredients%5B%5D%5Bunit%5D=&ingredients%5B%5D%5Btitle%5D=&ingredients%5B%5D%5Bnote%5D=&ingredients%5B%5D%5Bcategory%5D=&ingredients%5B%5D%5Bstore%5D=0&ingredients%5B%5D%5Bamount%5D=&ingredients%5B%5D%5Bunit%5D=&ingredients%5B%5D%5Btitle%5D=&ingredients%5B%5D%5Bnote%5D=&ingredients%5B%5D%5Bcategory%5D=&ingredients%5B%5D%5Bstore%5D=0&ingredients%5B%5D%5Bamount%5D=&ingredients%5B%5D%5Bunit%5D=&ingredients%5B%5D%5Btitle%5D=&ingredients%5B%5D%5Bnote%5D=&ingredients%5B%5D%5Bcategory%5D=&ingredients%5B%5D%5Bstore%5D=0&ingredients%5B%5D%5Bamount%5D=&ingredients%5B%5D%5Bunit%5D=&ingredients%5B%5D%5Btitle%5D=&ingredients%5B%5D%5Bnote%5D=&ingredients%5B%5D%5Bcategory%5D=&ingredients%5B%5D%5Bstore%5D=0&ingredients%5B%5D%5Bamount%5D=&ingredients%5B%5D%5Bunit%5D=&ingredients%5B%5D%5Btitle%5D=&ingredients%5B%5D%5Bnote%5D=&ingredients%5B%5D%5Bcategory%5D=&ingredients%5B%5D%5Bstore%5D=0&ingredients%5B%5D%5Bamount%5D=&ingredients%5B%5D%5Bunit%5D=&ingredients%5B%5D%5Btitle%5D=&ingredients%5B%5D%5Bnote%5D=&ingredients%5B%5D%5Bcategory%5D=&ingredients%5B%5D%5Bstore%5D=0&ingredients%5B%5D%5Bamount%5D=&ingredients%5B%5D%5Bunit%5D=&ingredients%5B%5D%5Btitle%5D=&ingredients%5B%5D%5Bnote%5D=&ingredients%5B%5D%5Bcategory%5D=&ingredients%5B%5D%5Bstore%5D=0&ingredients%5B%5D%5Bamount%5D=&ingredients%5B%5D%5Bunit%5D=&ingredients%5B%5D%5Btitle%5D=&ingredients%5B%5D%5Bnote%5D=&ingredients%5B%5D%5Bcategory%5D=&ingredients%5B%5D%5Bstore%5D=0&ingredients%5B%5D%5Bamount%5D=&ingredients%5B%5D%5Bunit%5D=&ingredients%5B%5D%5Btitle%5D=&ingredients%5B%5D%5Bnote%5D=&ingredients%5B%5D%5Bcategory%5D=&ingredients%5B%5D%5Bstore%5D=0&ingredients%5B%5D%5Bamount%5D=&ingredients%5B%5D%5Bunit%5D=&ingredients%5B%5D%5Btitle%5D=&ingredients%5B%5D%5Bnote%5D=&ingredients%5B%5D%5Bcategory%5D=&ingredients%5B%5D%5Bstore%5D=0&ingredients%5B%5D%5Bamount%5D=&ingredients%5B%5D%5Bunit%5D=&ingredients%5B%5D%5Btitle%5D=&ingredients%5B%5D%5Bnote%5D=&ingredients%5B%5D%5Bcategory%5D=&ingredients%5B%5D%5Bstore%5D=0&ingredients%5B%5D%5Bamount%5D=&ingredients%5B%5D%5Bunit%5D=&ingredients%5B%5D%5Btitle%5D=&ingredients%5B%5D%5Bnote%5D=&ingredients%5B%5D%5Bcategory%5D=&ingredients%5B%5D%5Bstore%5D=0'
 
 baseUrl = "https://www.plantoeat.com/{0}"
-
-LOGGER = getLogger(__name__)
 
 class PlanToEat(MycroftSkill):
     def __init__(self):
@@ -29,23 +26,23 @@ class PlanToEat(MycroftSkill):
 
     def _setup(self):
         if not self.settings:
-            LOGGER.error("settings is not set")
+            self.log.debug("settings is not set")
             return
 
         if not self.settings.get('username'):
-            LOGGER.error("username setting is not set")
+            self.log.debug("username setting is not set")
             return
 
         if not len(self.settings.get('username')):
-            LOGGER.error("username setting is empty")
+            self.log.debug("username setting is empty")
             return
 
         if not self.settings.get('password'):
-            LOGGER.error("username setting is not set")
+            self.log.debug("username setting is not set")
             return
 
         if not len(self.settings.get('password')):
-            LOGGER.error("username setting is empty")
+            self.log.debug("username setting is empty")
             return
 
         response = self.session.get(
@@ -56,7 +53,7 @@ class PlanToEat(MycroftSkill):
         )
 
         if 200 != response.status_code:
-            LOGGER.error("Response from getting login page was {0}".format(response.status_code))
+            self.log.debug("Response from getting login page was {0}".format(response.status_code))
             return
 
         soup = BeautifulSoup(response.text, "html.parser")
@@ -64,7 +61,7 @@ class PlanToEat(MycroftSkill):
         csrf = soup.find_all("meta", attrs = {"name": "csrf-token"})
 
         if not csrf or len(csrf) < 1:
-            LOGGER.error("Failed to extract CSRF token")
+            self.log.debug("Failed to extract CSRF token")
             return
 
         data = {
@@ -86,14 +83,14 @@ class PlanToEat(MycroftSkill):
         )
 
         if 200 != login_response.status_code:
-            LOGGER.error("Login request failed - status code: {0}".format(login_response.status_code))
+            self.log.debug("Login request failed - status code: {0}".format(login_response.status_code))
             return
 
         soup = BeautifulSoup(login_response.text, "html.parser")
         logout = soup.find_all('a', attrs = {"href": "/logout"})
 
         if not logout:
-            LOGGER.error("Failed to login")
+            self.log.debug("Failed to login")
             return
 
         shopping_lists = self.session.get(
@@ -104,14 +101,14 @@ class PlanToEat(MycroftSkill):
         )
 
         if 200 != shopping_lists.status_code:
-            LOGGER.error("Failed to fetch shopping lists page - status code: {0}".format(shopping_lists.status_code))
+            self.log.debug("Failed to fetch shopping lists page - status code: {0}".format(shopping_lists.status_code))
             return
 
         soup = BeautifulSoup(shopping_lists.text, "html.parser")
         list_id_input = soup.find_all("input", id="shopping_list_id")
 
         if not list_id_input:
-            LOGGER.error("Failed to find shopping list id")
+            self.log.debug("Failed to find shopping list id")
             return
 
         self.shopping_list_id = list_id_input[0]['value']
@@ -140,7 +137,7 @@ class PlanToEat(MycroftSkill):
         )
 
         if 200 != add_item_response.status_code:
-            LOGGER.error("Failed to add item to shopping list - status code: {0}".format(add_item_response.status_code))
+            self.log.debug("Failed to add item to shopping list - status code: {0}".format(add_item_response.status_code))
             return False
 
         return True
