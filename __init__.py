@@ -1,8 +1,15 @@
+"""Mycroft AI skill for querying PlanToEat"""
+
 from mycroft import MycroftSkill, intent_file_handler
 from bs4 import BeautifulSoup
 from requests import Session
 from urllib.parse import urlencode, quote
 import json
+
+__author__ = "Peter Lind"
+__version__ = "0.2"
+__copyright__ = "Copyright 2021, Peter Lind"
+__license__ = "MIT"
 
 userAgent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36'
 
@@ -114,6 +121,48 @@ class PlanToEat(MycroftSkill):
 
         self.shopping_list_id = list_id_input[0]['value']
         self.logged_in = True
+
+    @intent_file_handler('WhatIsForDinner.intent')
+    def handle_whats_for_dinner(self, message):
+        if not self.logged_in:
+            self.speak_dialog('NotLoggedIn')
+            return
+
+        dinner = self._fetch_dinner_plan()
+
+        if "" == dinner:
+            self.speak_dialog('WhatIsForDinner_failure')
+        else:
+            self.speak_dialog('WhatIsForDinner_success', {'dinner': dinner})
+
+    def _fetch_dinner_plan(self):
+        response = self.session.get(
+            baseUrl.format("planner"),
+            headers = {
+                'User-Agent': userAgent,
+            }
+        )
+
+        if 200 != response.status_code:
+            self.log.debug("Response from getting login page was {0}".format(response.status_code))
+            return ""
+
+        soup = BeautifulSoup(response.text, "html.parser")
+        today = soup.find('td', {"class": "today"})
+
+        bits = []
+
+        recipes = today.findChildren("a", {"class": "title"})
+
+        for recipe in recipes:
+            bits.append(recipe.text.strip())
+
+        recipes = today.findChildren("em", {"class": "title"})
+
+        for recipe in recipes:
+            bits.append(recipe.text.strip())
+
+        return ", ".join(bits)
 
     @intent_file_handler('AddToList.intent')
     def handle_add_to_list(self, message):
