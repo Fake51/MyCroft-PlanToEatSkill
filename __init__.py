@@ -7,7 +7,7 @@ from urllib.parse import urlencode, quote
 import json
 
 __author__ = "Peter Lind"
-__version__ = "0.2"
+__version__ = "0.2.1"
 __copyright__ = "Copyright 2021, Peter Lind"
 __license__ = "MIT"
 
@@ -125,8 +125,11 @@ class PlanToEat(MycroftSkill):
     @intent_file_handler('WhatIsForDinner.intent')
     def handle_whats_for_dinner(self, message):
         if not self.logged_in:
-            self.speak_dialog('NotLoggedIn')
-            return
+            self._setup()
+
+            if not self.logged_in:
+                self.speak_dialog('NotLoggedIn')
+                return
 
         dinner = self._fetch_dinner_plan()
 
@@ -167,8 +170,11 @@ class PlanToEat(MycroftSkill):
     @intent_file_handler('AddToList.intent')
     def handle_add_to_list(self, message):
         if not self.logged_in:
-            self.speak_dialog('NotLoggedIn')
-            return
+            self._setup()
+
+            if not self.logged_in:
+                self.speak_dialog('NotLoggedIn')
+                return
 
         item_name = message.data.get('item')
 
