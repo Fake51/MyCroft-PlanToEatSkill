@@ -34,23 +34,23 @@ class PlanToEat(MycroftSkill):
 
     def _setup(self):
         if not self.settings:
-            self.log.debug("settings is not set")
+            self.log.info("settings is not set")
             return
 
         if not self.settings.get('username'):
-            self.log.debug("username setting is not set")
+            self.log.info("username setting is not set")
             return
 
         if not len(self.settings.get('username')):
-            self.log.debug("username setting is empty")
+            self.log.info("username setting is empty")
             return
 
         if not self.settings.get('password'):
-            self.log.debug("username setting is not set")
+            self.log.info("username setting is not set")
             return
 
         if not len(self.settings.get('password')):
-            self.log.debug("username setting is empty")
+            self.log.info("username setting is empty")
             return
 
         response = self.session.get(
@@ -61,7 +61,7 @@ class PlanToEat(MycroftSkill):
         )
 
         if 200 != response.status_code:
-            self.log.debug("Response from getting login page was {0}".format(response.status_code))
+            self.log.info("Response from getting login page was {0}".format(response.status_code))
             return
 
         soup = BeautifulSoup(response.text, "html.parser")
@@ -69,7 +69,7 @@ class PlanToEat(MycroftSkill):
         csrf = soup.find_all("meta", attrs = {"name": "csrf-token"})
 
         if not csrf or len(csrf) < 1:
-            self.log.debug("Failed to extract CSRF token")
+            self.log.info("Failed to extract CSRF token")
             return
 
         data = {
@@ -91,14 +91,14 @@ class PlanToEat(MycroftSkill):
         )
 
         if 200 != login_response.status_code:
-            self.log.debug("Login request failed - status code: {0}".format(login_response.status_code))
+            self.log.info("Login request failed - status code: {0}".format(login_response.status_code))
             return
 
         soup = BeautifulSoup(login_response.text, "html.parser")
         logout = soup.find_all('a', attrs = {"href": "/logout"})
 
         if not logout:
-            self.log.debug("Failed to login")
+            self.log.info("Failed to login")
             return
 
         shopping_lists = self.session.get(
@@ -109,14 +109,14 @@ class PlanToEat(MycroftSkill):
         )
 
         if 200 != shopping_lists.status_code:
-            self.log.debug("Failed to fetch shopping lists page - status code: {0}".format(shopping_lists.status_code))
+            self.log.info("Failed to fetch shopping lists page - status code: {0}".format(shopping_lists.status_code))
             return
 
         soup = BeautifulSoup(shopping_lists.text, "html.parser")
         list_id_input = soup.find_all("input", id="shopping_list_id")
 
         if not list_id_input:
-            self.log.debug("Failed to find shopping list id")
+            self.log.info("Failed to find shopping list id")
             return
 
         self.shopping_list_id = list_id_input[0]['value']
@@ -147,7 +147,7 @@ class PlanToEat(MycroftSkill):
         )
 
         if 200 != response.status_code:
-            self.log.debug("Response from getting login page was {0}".format(response.status_code))
+            self.log.info("Response from getting login page was {0}".format(response.status_code))
             return ""
 
         soup = BeautifulSoup(response.text, "html.parser")
@@ -197,7 +197,7 @@ class PlanToEat(MycroftSkill):
         )
 
         if 200 != add_item_response.status_code:
-            self.log.debug("Failed to add item to shopping list - status code: {0}".format(add_item_response.status_code))
+            self.log.info("Failed to add item to shopping list - status code: {0}".format(add_item_response.status_code))
             return False
 
         return True
