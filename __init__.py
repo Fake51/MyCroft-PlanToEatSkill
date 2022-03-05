@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 from requests import Session
 from urllib.parse import urlencode, quote
 import json
+import cloudscraper
 
 __author__ = "Peter Lind"
 __version__ = "0.2.1"
@@ -21,7 +22,7 @@ class PlanToEat(MycroftSkill):
     def __init__(self):
         MycroftSkill.__init__(self)
         super().__init__(name="PlanToEatSkill")
-        self.session = Session()
+        self.session = cloudscraper.create_scraper()
         self.logged_in = False
         self.shopping_list_id = None
 
@@ -53,12 +54,7 @@ class PlanToEat(MycroftSkill):
             self.log.info("username setting is empty")
             return
 
-        response = self.session.get(
-            baseUrl.format("login"),
-            headers = {
-                'User-Agent': userAgent,
-            }
-        )
+        response = self.session.get(baseUrl.format("login"))
 
         if 200 != response.status_code:
             self.log.info("Response from getting login page was {0}".format(response.status_code))
@@ -81,7 +77,6 @@ class PlanToEat(MycroftSkill):
         login_response = self.session.post(
             baseUrl.format("login"),
             headers = {
-                'User-Agent': userAgent,
                 'Referer': baseUrl.format('login'),
                 'Accept': 'text/html,application/xhtml+xml',
                 'Accept-Language': 'en-US,en;q=0.5',
@@ -101,12 +96,7 @@ class PlanToEat(MycroftSkill):
             self.log.info("Failed to login")
             return
 
-        shopping_lists = self.session.get(
-            baseUrl.format("shopping_lists"),
-            headers = {
-                'User-Agent': userAgent,
-            }
-        )
+        shopping_lists = self.session.get(baseUrl.format("shopping_lists"))
 
         if 200 != shopping_lists.status_code:
             self.log.info("Failed to fetch shopping lists page - status code: {0}".format(shopping_lists.status_code))
@@ -139,12 +129,7 @@ class PlanToEat(MycroftSkill):
             self.speak_dialog('WhatIsForDinner_success', {'dinner': dinner})
 
     def _fetch_dinner_plan(self):
-        response = self.session.get(
-            baseUrl.format("planner"),
-            headers = {
-                'User-Agent': userAgent,
-            }
-        )
+        response = self.session.get(baseUrl.format("planner"))
 
         if 200 != response.status_code:
             self.log.info("Response from getting login page was {0}".format(response.status_code))
@@ -190,9 +175,6 @@ class PlanToEat(MycroftSkill):
 
         add_item_response = self.session.post(
             baseUrl.format("shopping_lists/update"),
-            headers = {
-                'User-Agent': userAgent,
-            },
             data = requestData
         )
 
@@ -205,7 +187,7 @@ class PlanToEat(MycroftSkill):
     def _get_category_suggestion(self, item_name):
         response = self.session.post(
             baseUrl.format("recommend_category"),
-            headers = {'User-Agent': userAgent, 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},
+            headers = {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},
             data = "title={0}".format(quote(item_name))
         )
         self.log.info("request url: {0}, request body: {1}, base: {2}, data: {3}".format(response.request.url, response.request.body, baseUrl.format("recommend_category"), "title={0}".format(quote(item_name))))
