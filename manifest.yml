@@ -9,4 +9,3 @@ dependencies:
   python:
     - beautifulsoup4
     - requests
-    - cloudscraper
