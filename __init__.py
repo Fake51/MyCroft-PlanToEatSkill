@@ -134,6 +134,7 @@ class PlanToEat(MycroftSkill):
         items = self.api.fetchShoppingListItems()
 
         if len(items) > 0:
+            itemList = ", ".join(item["title"] for item in items)
             self.speak_dialog('RevealList_items', {'items': items})
         elif items == "":
             self.speak_dialog('RevealList_empty')

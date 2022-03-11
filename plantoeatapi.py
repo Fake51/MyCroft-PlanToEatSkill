@@ -60,9 +60,9 @@ class PlanToEatApi():
 
         for item in itemsResponse.json():
             if item["recipe_ids"] == [] and item["event_ids"] == [] and item["purchased"] == None:
-                items.append(item["title"])
+                items.append({"id": item["item_ids"][0], "title": item["title"]})
 
-        return ", ".join(items)
+        return items
 
     def addItemToList(self, itemName):
 #        categorySuggestion = self._getCategorySuggestion(itemName)
@@ -77,17 +77,16 @@ class PlanToEatApi():
             raise Exception("Failed to add item to shopping list - status code: {0}".format(addItemResponse.status_code))
 
     def _getCategorySuggestion(self, itemName):
-        response = self.session.post(
-            baseUrl.format("recommend_category"),
-            headers = {'User-Agent': userAgent, 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},
-            data = "title={0}".format(quote(itemName))
+        response = self.session.get(
+            baseUrl.format("api/v1/ingredients/suggestion?title={0}".format(itemName)),
+            headers = self._makeApiHeaders()
         )
 
         if response.status_code != 200:
             return ""
 
         result = response.json()
-
+        print(result)
         if result and len(result) == 3 and result[2]:
             return result[2]
         
