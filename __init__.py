@@ -7,11 +7,11 @@ from requests import Session
 from urllib.parse import urlencode, quote
 
 import json
-import plantoeatapi
+from . import plantoeatapi
 
 
 __author__ = "Peter Lind"
-__version__ = "0.4.0"
+__version__ = "0.4.1"
 __copyright__ = "Copyright 2021, Peter Lind"
 __license__ = "MIT"
 
