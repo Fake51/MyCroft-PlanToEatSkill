@@ -1,9 +1,8 @@
 from requests import Session
 
-
 userAgent = 'Mozilla/5.0 (Android 12; Mobile; rv:68.0) Gecko/68.0 Firefox/98.0'
-
 baseUrl = "https://api.plantoeat.com/{0}"
+clientVersion = "2.9.3"
 
 class PlanToEatApi():
     def __init__(self, username, password):
@@ -34,7 +33,7 @@ class PlanToEatApi():
     def _makeApiHeaders(self, extraHeaders = {}):
         defaultHeaders = {
             'User-Agent': userAgent,
-            "X-PTE-CLIENT-VERSION": "2.9.3",
+            "X-PTE-CLIENT-VERSION": clientVersion,
         }
 
         for key in extraHeaders:
@@ -64,17 +63,19 @@ class PlanToEatApi():
 
         return items
 
+
     def addItemToList(self, itemName):
-#        categorySuggestion = self._getCategorySuggestion(itemName)
+        categorySuggestionId = self._getCategorySuggestion(itemName)
 
         addItemResponse = self.session.post(
             baseUrl.format("api/v1/shopping_list/items"),
             headers = self._makeApiHeaders(),
-            json = {"item": {"title": itemName}}
+            json = {"item": {"title": itemName, "grocery_category_id": categorySuggestionId, "store_id": None}}
         )
 
-        if 200 < addItemResponse.status_code and 300 >= addItemResponse.status_code:
+        if not addItemResponse.ok:
             raise Exception("Failed to add item to shopping list - status code: {0}".format(addItemResponse.status_code))
+
 
     def _getCategorySuggestion(self, itemName):
         response = self.session.get(
@@ -82,20 +83,28 @@ class PlanToEatApi():
             headers = self._makeApiHeaders()
         )
 
-        if response.status_code != 200:
-            return ""
+        if not response.ok:
+            return None
 
         result = response.json()
-        print(result)
-        if result and len(result) == 3 and result[2]:
-            return result[2]
+
+        if result and "category_id" in result:
+            return result["category_id"]
         
-        return ''
+        return None
+
+
+    def fetchDateEvents(self, date):
+        response = self.session.get(
+            baseUrl.format("api/v1/events?start_date={0}&end_date={0}".format(date)),
+            headers = self._makeApiHeaders()
+        )
+
+        if not response.ok:
+            return None
+
+        return response.json()
 
 
 def create(username, password):
     return PlanToEatApi(username, password)
-
-def dump(obj):
-    for attr in dir(obj):
-        print("obj.%s = %r" % (attr, getattr(obj, attr)))

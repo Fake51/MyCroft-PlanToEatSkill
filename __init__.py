@@ -1,17 +1,20 @@
 """Mycroft AI skill for querying PlanToEat"""
 
-from mycroft import MycroftSkill, intent_file_handler
 from bs4 import BeautifulSoup
+from datetime import datetime
+from mycroft import MycroftSkill, intent_file_handler
 from requests import Session
 from urllib.parse import urlencode, quote
+
 import json
 import plantoeatapi
 
 
 __author__ = "Peter Lind"
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 __copyright__ = "Copyright 2021, Peter Lind"
 __license__ = "MIT"
+
 
 class PlanToEat(MycroftSkill):
     def __init__(self):
@@ -55,6 +58,7 @@ class PlanToEat(MycroftSkill):
             )
 
             self.logged_in = True
+
         except Exception as inst:
             self.log.info(inst)
             return
@@ -68,41 +72,16 @@ class PlanToEat(MycroftSkill):
                 self.speak_dialog('NotLoggedIn')
                 return
 
-        dinner = self._fetch_dinner_plan()
+        today = datetime.today().strftime('%Y-%m-%d')
+        events = self.api.fetchDateEvents(today)
+
+        dinner = ", ".join([event["description"] for event in events])
 
         if "" == dinner:
             self.speak_dialog('WhatIsForDinner_failure')
         else:
             self.speak_dialog('WhatIsForDinner_success', {'dinner': dinner})
 
-    def _fetch_dinner_plan(self):
-        response = self.session.get(
-            baseUrl.format("planner"),
-            headers = {
-                'User-Agent': userAgent,
-            }
-        )
-
-        if 200 != response.status_code:
-            self.log.info("Response from getting login page was {0}".format(response.status_code))
-            return ""
-
-        soup = BeautifulSoup(response.text, "html.parser")
-        today = soup.find('td', {"class": "today"})
-
-        bits = []
-
-        recipes = today.findChildren("a", {"class": "title"})
-
-        for recipe in recipes:
-            bits.append(recipe.text.strip())
-
-        recipes = today.findChildren("em", {"class": "title"})
-
-        for recipe in recipes:
-            bits.append(recipe.text.strip())
-
-        return ", ".join(bits)
 
     @intent_file_handler('AddToList.intent')
     def handle_add_to_list(self, message):

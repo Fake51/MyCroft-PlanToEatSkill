@@ -9,4 +9,8 @@ api = plantoeatapi.create(sys.argv[1], sys.argv[2])
 #itemList = ", ".join(item["title"] for item in items)
 #print(itemList)
 
-categories = api._getCategorySuggestion("butter")
+#api.addItemToList("bacon")
+dateEvents = api.fetchDateEvents("2022-03-11")
+
+dinner = ", ".join([event["description"] for event in dateEvents])
+print(dinner)
