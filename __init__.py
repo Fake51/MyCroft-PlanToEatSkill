@@ -1,7 +1,7 @@
 """Mycroft AI skill for querying PlanToEat"""
 
 from bs4 import BeautifulSoup
-from datetime import datetime
+from datetime import datetime, timedelta
 from mycroft import MycroftSkill, intent_file_handler
 from requests import Session
 from urllib.parse import urlencode, quote
@@ -11,8 +11,8 @@ from . import plantoeatapi
 
 
 __author__ = "Peter Lind"
-__version__ = "0.4.2"
-__copyright__ = "Copyright 2021, Peter Lind"
+__version__ = "0.4.3"
+__copyright__ = "Copyright 2022, Peter Lind"
 __license__ = "MIT"
 
 
