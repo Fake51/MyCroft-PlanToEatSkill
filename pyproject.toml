@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "plantoeat-skill"
-version = "0.5.0"
+version = "0.5.1"
 description = "PlanToEat skill for MyCroft AI"
 authors = ["Peter Lind <peter.e.lind@gmail.com>"]
 license = "MIT"

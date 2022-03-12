@@ -11,7 +11,7 @@ from . import plantoeatapi
 
 
 __author__ = "Peter Lind"
-__version__ = "0.5.0"
+__version__ = "0.5.1"
 __copyright__ = "Copyright 2022, Peter Lind"
 __license__ = "MIT"
 
