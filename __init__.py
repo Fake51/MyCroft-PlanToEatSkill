@@ -11,7 +11,7 @@ from . import plantoeatapi
 
 
 __author__ = "Peter Lind"
-__version__ = "0.4.3"
+__version__ = "0.4.4"
 __copyright__ = "Copyright 2022, Peter Lind"
 __license__ = "MIT"
 
@@ -124,7 +124,7 @@ class PlanToEat(MycroftSkill):
 
         if len(items) > 0:
             itemList = ", ".join([item["title"] for item in items if item["title"]])
-            self.speak_dialog('RevealList_items', {'items': items})
+            self.speak_dialog('RevealList_items', {'items': itemList})
         elif items == "":
             self.speak_dialog('RevealList_empty')
         else:
