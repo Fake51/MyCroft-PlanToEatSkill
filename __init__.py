@@ -11,7 +11,7 @@ from . import plantoeatapi
 
 
 __author__ = "Peter Lind"
-__version__ = "0.4.1"
+__version__ = "0.4.2"
 __copyright__ = "Copyright 2021, Peter Lind"
 __license__ = "MIT"
 
@@ -72,10 +72,20 @@ class PlanToEat(MycroftSkill):
                 self.speak_dialog('NotLoggedIn')
                 return
 
-        today = datetime.today().strftime('%Y-%m-%d')
-        events = self.api.fetchDateEvents(today)
+        when = message.data.get('when')
 
-        dinner = ", ".join([event["description"] for event in events])
+        if 'today' == when or 'tonight' == when:
+            date = datetime.today().strftime('%Y-%m-%d')
+
+        elif 'tomorrow' == when:
+            date = (datetime.today() + timedelta(days=1)).strftime('%Y-%m-%d')
+
+        else:
+            date = datetime.today().strftime('%Y-%m-%d')
+
+        events = self.api.fetchDateEvents(date)
+
+        dinner = ", ".join([event["description"] for event in events if event["description"]])
 
         if "" == dinner:
             self.speak_dialog('WhatIsForDinner_failure')
@@ -113,7 +123,7 @@ class PlanToEat(MycroftSkill):
         items = self.api.fetchShoppingListItems()
 
         if len(items) > 0:
-            itemList = ", ".join(item["title"] for item in items)
+            itemList = ", ".join([item["title"] for item in items if item["title"]])
             self.speak_dialog('RevealList_items', {'items': items})
         elif items == "":
             self.speak_dialog('RevealList_empty')
