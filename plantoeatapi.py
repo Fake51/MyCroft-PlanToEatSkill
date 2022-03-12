@@ -1,4 +1,5 @@
 from requests import Session
+import re
 
 userAgent = 'Mozilla/5.0 (Android 12; Mobile; rv:68.0) Gecko/68.0 Firefox/98.0'
 baseUrl = "https://api.plantoeat.com/{0}"
@@ -64,6 +65,14 @@ class PlanToEatApi():
         return items
 
 
+    def isItemOnList(self, itemName):
+        for item in self.fetchShoppingListItems():
+            if re.search(itemName, item["title"]):
+                return True
+
+        return False
+
+
     def addItemToList(self, itemName):
         categorySuggestionId = self._getCategorySuggestion(itemName)
 
@@ -76,6 +85,24 @@ class PlanToEatApi():
         if not addItemResponse.ok:
             raise Exception("Failed to add item to shopping list - status code: {0}".format(addItemResponse.status_code))
 
+
+    def removeItemFromList(self, itemName):
+        itemIds = []
+
+        for item in self.fetchShoppingListItems():
+            if re.search(itemName, item["title"]):
+                itemIds.append(item["id"])
+
+        if 0 < len(itemIds):
+            removeItemResponse = self.session.delete(
+                baseUrl.format("api/v1/shopping_list/items"),
+                headers = self._makeApiHeaders(),
+                json = {"item_ids": itemIds}
+            )
+
+            return removeItemResponse.ok
+
+        return false
 
     def _getCategorySuggestion(self, itemName):
         response = self.session.get(
@@ -105,6 +132,46 @@ class PlanToEatApi():
 
         return response.json()
 
+
+    def fetchRecipes(self, recipeIds):
+        if 0 == len(recipeIds):
+            return []
+
+        ids = [str(id) for id in recipeIds]
+
+        response = self.session.get(
+            baseUrl.format("api/v1/recipes?ids={0}".format(",".join(ids))),
+            headers = self._makeApiHeaders()
+        )
+
+        if response.ok:
+            return response.json()
+
+        return []
+
+
+    def getDinnerDescription(self, date):
+        events = self.fetchDateEvents(date)
+
+        if 0 == len(events):
+            return ""
+
+        parts = []
+        recipeIds = []
+
+        for event in events:
+            if event["description"]:
+                parts.append(event["description"])
+            elif event["recipe_id"]:
+                recipeIds.append(event["recipe_id"])
+
+        if 0 < len(recipeIds):
+            for recipe in self.fetchRecipes(recipeIds):
+                if "title" in recipe:
+                    parts.append(recipe["title"])
+
+
+        return ", ".join(parts)
 
 def create(username, password):
     return PlanToEatApi(username, password)

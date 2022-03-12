@@ -11,7 +11,7 @@ from . import plantoeatapi
 
 
 __author__ = "Peter Lind"
-__version__ = "0.4.4"
+__version__ = "0.5.0"
 __copyright__ = "Copyright 2022, Peter Lind"
 __license__ = "MIT"
 
@@ -83,14 +83,46 @@ class PlanToEat(MycroftSkill):
         else:
             date = datetime.today().strftime('%Y-%m-%d')
 
-        events = self.api.fetchDateEvents(date)
-
-        dinner = ", ".join([event["description"] for event in events if event["description"]])
+        dinner = self.api.getDinnerDescription(date)
 
         if "" == dinner:
             self.speak_dialog('WhatIsForDinner_failure')
         else:
             self.speak_dialog('WhatIsForDinner_success', {'dinner': dinner})
+
+
+    @intent_file_handler('IsItemOnList.intent')
+    def handle_is_item_on_list(self, message):
+        if not self.logged_in:
+            self._setup()
+
+            if not self.logged_in:
+                self.speak_dialog('NotLoggedIn')
+                return
+
+        itemName = message.data.get('item')
+
+        if self.api.isItemOnList(itemName):
+            self.speak_dialog('IsItemOnList_yes', {'item': itemName})
+        else:
+            self.speak_dialog('IsItemOnList_no', {'item': itemName})
+
+
+    @intent_file_handler('RemoveFromList.intent')
+    def handle_remove_from_list(self, message):
+        if not self.logged_in:
+            self._setup()
+
+            if not self.logged_in:
+                self.speak_dialog('NotLoggedIn')
+                return
+
+        itemName = message.data.get('item')
+
+        if self.api.removeItemFromList(itemName):
+            self.speak_dialog('RemoveFromList_success', {'item': itemName})
+        else:
+            self.speak_dialog('RemoveFromList_failure', {'item': itemName})
 
 
     @intent_file_handler('AddToList.intent')
@@ -102,14 +134,15 @@ class PlanToEat(MycroftSkill):
                 self.speak_dialog('NotLoggedIn')
                 return
 
-        item_name = message.data.get('item')
+        itemName = message.data.get('item')
 
         try:
-            self.api.addItemToList(item_name)
-            self.speak_dialog('AddToList_success', {'item': item_name})
+            self.api.addItemToList(itemName)
+            self.speak_dialog('AddToList_success', {'item': itemName})
         except Exception as inst:
             self.log.info(inst)
-            self.speak_dialog('AddToList_failure', {'item': item_name})
+            self.speak_dialog('AddToList_failure', {'item': itemName})
+
 
     @intent_file_handler('RevealList.intent')
     def reveal_list(self, message):
