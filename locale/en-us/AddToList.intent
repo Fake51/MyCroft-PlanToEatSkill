@@ -1,3 +1,6 @@
-(add | put) {item1} (to | on) (my | the | our) (shopping | grocery ) list
-(add | put) {item1} and {item2} (on | to) (my | the | our) (shopping | grocery ) list
-(add | put) {item1} and {item2} and {item3} (on | to) (my | the | our) (shopping | grocery ) list
+add {item1} to (my | the | our) (shopping | grocery ) list
+put {item1} on (my | the | our) (shopping | grocery ) list
+add {item1} and {item2} to (my | the | our) (shopping | grocery ) list
+put {item1} and {item2} on (my | the | our) (shopping | grocery ) list
+add {item1} and {item2} and {item3} to (my | the | our) (shopping | grocery ) list
+put {item1} and {item2} and {item3} on (my | the | our) (shopping | grocery ) list
