@@ -73,17 +73,18 @@ class PlanToEatApi():
         return False
 
 
-    def addItemToList(self, itemName):
+    def addItemToList(self, itemList):
         categorySuggestionId = self._getCategorySuggestion(itemName)
 
-        addItemResponse = self.session.post(
-            baseUrl.format("api/v1/shopping_list/items"),
-            headers = self._makeApiHeaders(),
-            json = {"item": {"title": itemName, "grocery_category_id": categorySuggestionId, "store_id": None}}
-        )
+        for itemName in itemList:
+            addItemResponse = self.session.post(
+                baseUrl.format("api/v1/shopping_list/items"),
+                headers = self._makeApiHeaders(),
+                json = {"item": {"title": itemName, "grocery_category_id": categorySuggestionId, "store_id": None}}
+            )
 
-        if not addItemResponse.ok:
-            raise Exception("Failed to add item to shopping list - status code: {0}".format(addItemResponse.status_code))
+            if not addItemResponse.ok:
+                raise Exception("Failed to add item to shopping list - status code: {0}".format(addItemResponse.status_code))
 
 
     def removeItemFromList(self, itemName):

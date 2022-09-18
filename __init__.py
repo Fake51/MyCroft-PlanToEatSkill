@@ -134,14 +134,38 @@ class PlanToEat(MycroftSkill):
                 self.speak_dialog('NotLoggedIn')
                 return
 
-        itemName = message.data.get('item')
+        itemList = [message.data.get('item1')]
+
+        item = message.data.get('item2')
+        if item != "":
+            itemList.append(item)
+
+        item = message.data.get('item3')
+        if item != "":
+            itemList.append(item)
 
         try:
-            self.api.addItemToList(itemName)
-            self.speak_dialog('AddToList_success', {'item': itemName})
+            self.api.addItemToList(itemList)
+
+            lastItem = itemList.pop()
+
+            if len(itemList) > 0:
+                items = "{0} and {1}".format(", ".join(itemList), lastItem)
+            else:
+                items = lastItem
+
+            self.speak_dialog('AddToList_success', {'items': items})
         except Exception as inst:
             self.log.info(inst)
-            self.speak_dialog('AddToList_failure', {'item': itemName})
+
+            lastItem = itemList.pop()
+
+            if len(itemList) > 0:
+                items = "{0} and {1}".format(", ".join(itemList), lastItem)
+            else:
+                items = lastItem
+
+            self.speak_dialog('AddToList_failure', {'items': items})
 
 
     @intent_file_handler('RevealList.intent')
