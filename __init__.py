@@ -136,13 +136,40 @@ class PlanToEat(MycroftSkill):
 
         itemList = [message.data.get('item1')]
 
-        item = message.data.get('item2')
-        if item != "":
-            itemList.append(item)
+        try:
+            self.api.addItemToList(itemList)
 
-        item = message.data.get('item3')
-        if item != "":
-            itemList.append(item)
+            lastItem = itemList.pop()
+
+            if len(itemList) > 0:
+                items = "{0} and {1}".format(", ".join(itemList), lastItem)
+            else:
+                items = lastItem
+
+            self.speak_dialog('AddToList_success', {'items': items})
+        except Exception as inst:
+            self.log.info(inst)
+
+            lastItem = itemList.pop()
+
+            if len(itemList) > 0:
+                items = "{0} and {1}".format(", ".join(itemList), lastItem)
+            else:
+                items = lastItem
+
+            self.speak_dialog('AddToList_failure', {'items': items})
+
+
+    @intent_file_handler('AddTwoToList.intent')
+    def handle_add_two_to_list(self, message):
+        if not self.logged_in:
+            self._setup()
+
+            if not self.logged_in:
+                self.speak_dialog('NotLoggedIn')
+                return
+
+        itemList = [message.data.get('item1'), message.data.get('item2')]
 
         try:
             self.api.addItemToList(itemList)
@@ -166,6 +193,7 @@ class PlanToEat(MycroftSkill):
                 items = lastItem
 
             self.speak_dialog('AddToList_failure', {'items': items})
+
 
 
     @intent_file_handler('RevealList.intent')
