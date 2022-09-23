@@ -74,9 +74,9 @@ class PlanToEatApi():
 
 
     def addItemsToList(self, itemList):
-        categorySuggestionId = self._getCategorySuggestion(itemName)
-
         for itemName in itemList:
+            categorySuggestionId = self._getCategorySuggestion(itemName)
+
             addItemResponse = self.session.post(
                 baseUrl.format("api/v1/shopping_list/items"),
                 headers = self._makeApiHeaders(),
