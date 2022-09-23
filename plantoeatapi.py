@@ -73,7 +73,7 @@ class PlanToEatApi():
         return False
 
 
-    def addItemToList(self, itemList):
+    def addItemsToList(self, itemList):
         categorySuggestionId = self._getCategorySuggestion(itemName)
 
         for itemName in itemList:
