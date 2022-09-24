@@ -103,7 +103,7 @@ class PlanToEatApi():
 
             return removeItemResponse.ok
 
-        return false
+        return False
 
     def _getCategorySuggestion(self, itemName):
         response = self.session.get(
